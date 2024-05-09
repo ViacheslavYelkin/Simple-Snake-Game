@@ -27,11 +27,15 @@ void GameFieldRenderer::printGameField()
 	while (!(QUIT))
     {
         Console::cleanConsole();
-		// printing game field with different formatting
+		// Printing game field with different formatting
 		for (int i{}; i < game_field_->rows_; i++) 
         {
 			for (int j{}; j < game_field_->columns_; j++) 
             {
+                // Checking if current position need to be updated
+                // If not, skipping
+                // Else printing character at given position
+
                 if (game_field_->at(std::make_unique<Point>(i, j)) != 'A' &&
                     game_field_->at(std::make_unique<Point>(i, j)) != 'S' && 
                     game_field_->at(std::make_unique<Point>(i, j)) == game_field_->atBuffer(std::make_unique<Point>(i, j)))

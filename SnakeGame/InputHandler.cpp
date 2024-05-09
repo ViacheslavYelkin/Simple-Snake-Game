@@ -6,6 +6,7 @@
 
 void InputHandler::readDirection()
 {
+    // Reading user input while snake alive and player haven't pressed 'ESC'
 	while (!(QUIT))
 	{
 		direction_ = _getch();
@@ -14,6 +15,7 @@ void InputHandler::readDirection()
 
 EDirection InputHandler::getDirection()
 {
+    // Converting character to appropriate enum value
     switch (direction_) 
     {
         case 'w':

@@ -18,10 +18,13 @@ void GameFieldBuilder::buildGameField()
 	int columns;
 	Console::getConsoleSize(rows, columns);
 
-	game_field_ = std::make_shared<GameField>(rows, columns); // creating GameField object with size of console width and height
-	game_field_->initializeField(); // initializing matrix
+	// Creating GameField object with size of console width and height
+	game_field_ = std::make_shared<GameField>(rows, columns); 
 
-	// filling initialized matrix with default symbol ' '
+	// Initializing matrix
+	game_field_->initializeField();
+
+	// Filling initialized matrix with default symbol ' '
 	for (int i{}; i < game_field_->rows_; i++) 
 	{
 		for (int j{}; j < game_field_->columns_; j++) 
@@ -34,5 +37,5 @@ void GameFieldBuilder::buildGameField()
 
 std::shared_ptr<GameField> GameFieldBuilder::getGameField()
 {
-	return game_field_ ? game_field_ : nullptr; // checking if game field was created and returning pointer to it
+	return game_field_ ? game_field_ : nullptr; // Checking if game field was created and returning pointer to it
 }

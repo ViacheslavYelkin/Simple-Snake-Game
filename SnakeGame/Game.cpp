@@ -17,6 +17,7 @@
 #include "GameFieldRenderer.h"
 #include "Game.h"
 
+
 void Game::prepareConsole()
 {
     Console::makeCursorInvisible();
@@ -24,6 +25,7 @@ void Game::prepareConsole()
 
 void Game::prepareGameField()
 {
+    // Creating game field with help of GameFieldBuilder and passing this field to renderer
     GameFieldBuilder builder;
     builder.buildGameField();
 
@@ -33,6 +35,7 @@ void Game::prepareGameField()
 
 void Game::prepareSnake()
 {
+    // Creating snake and spawning it at given location in game field
     snake_ = std::make_shared<Snake>(game_field_);
 
     snake_->spawn(std::make_unique<Point>(game_field_->rows() / 2,
@@ -42,6 +45,7 @@ void Game::prepareSnake()
 
 void Game::prepareApple()
 {
+    // Creating apple and spawning it at given location in game field
     apple_ = std::make_unique<Apple>(game_field_);
     apple_->subscribe(snake_);
     apple_->spawn(std::make_unique<Point>());
@@ -49,9 +53,13 @@ void Game::prepareApple()
 
 void Game::runThreads()
 {
+    // Creating thread to render field independently
     std::jthread print_thread(&GameFieldRenderer::printGameField, &renderer_);
+
+    // Creating thread to read user input independently
     std::jthread read_user_input_thread(&InputHandler::readDirection);
 
+    // Creating lambda function to be able process it in thread
     auto move_snake = [this]()
         {
             while (!(QUIT))
@@ -60,8 +68,11 @@ void Game::runThreads()
                 std::this_thread::sleep_for(std::chrono::milliseconds(SNAKE_SPEED);
             }
         };
+
+    // Creating thread to make snake move in given direction
     std::jthread move_snake_thread(move_snake);
 
+    // Creating lambda function to be able process it in thread
     auto eat_apple = [this]()
         {
             while (!(QUIT))
@@ -70,11 +81,15 @@ void Game::runThreads()
                 std::this_thread::sleep_for(std::chrono::milliseconds(UPDATE_FREQUENCY));
             }
         };
+
+    // Creating thread to check if apple collide with snake
     std::jthread eat_apple_thread(eat_apple);
 }
 
 void Game::printEndGameSentences()
 {
+    // Printing information after round's end
+
     Console::cleanConsole();
 
     std::string score_sentence{ "Your score: " + std::to_string(Snake::apples_eaten_) + "\n\n" };
@@ -93,6 +108,8 @@ void Game::printEndGameSentences()
 
 void Game::run()
 {
+   // Assembling game and running it
+
    repeat:
     prepareConsole();
     prepareGameField();

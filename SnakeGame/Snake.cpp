@@ -17,6 +17,7 @@ Snake::Snake(std::shared_ptr<GameField> field)
 
 Snake::~Snake()
 {
+	// Unsubscribing all passed nodes from head_ 
 	std::shared_ptr<SnakeNode> curr = head_->next_;
 	while (curr) 
 	{
@@ -27,9 +28,15 @@ Snake::~Snake()
 
 void Snake::eat()
 {
+	// Adding new node to snake 
 	std::unique_ptr<Point> offset = std::make_unique<Point>();
+
+	// Getting direction at which to place next node
 	getOffsetPoint(offset);
 
+	// Checking if snake has tail
+	// If true, adding next node
+	// Else creating tail
 	if(tail_)
 	{
 		std::shared_ptr<SnakeNode> next = std::make_shared<SnakeNode>(game_field_);
@@ -50,34 +57,53 @@ void Snake::eat()
 
 		head_->next_ = tail_;
 	}
+
+	// Subscribing new node to head to check if head collided with body part
 	head_->subscribe(tail_);
+
+	// Increasing how much apples we've eaten
 	apples_eaten_++;
+
+	// Checking if we need to increase speed of snake
 	modifySpeed();
 }
 
 void Snake::move(EDirection direction)
 {
+	// Moving snake in given direction
 	direction_ = direction;
+	
+	// Interpreting given direction to coordinates
 	std::unique_ptr<Point> offset = std::make_unique<Point>();
 	getOffsetPoint(offset);
-
+ 
 	std::shared_ptr<SnakeNode> curr = head_->next_;
 	std::shared_ptr<SnakeNode> prev = std::make_shared<SnakeNode>(head_);
 
+	// Replacing snake character with blank field at current location
 	game_field_->insert(' ',
 						head_->location_
 					   );
 
+	// Updating current location of head of snake
 	head_->location_.operator*() += offset.operator*();
+
+	// Checking if we going out of borders of console
+	// If true, moving snake body part to opposite side of console window
+	// Else skipping
 	if (!game_field_->isInBounds(head_->location_))
 	{
 		moveToOppositeSide();
 	}
 
+	// Spawning head at new location
 	head_->spawn(head_->location_);
 	location_.operator*() = head_->location_.operator*();
+
+	// Notifying all subscribers that head change its location 
 	head_->notify();
 
+	// Moving another body part of snake respectively
 	while (curr) 
 	{
 		std::shared_ptr<SnakeNode> temp = std::make_shared<SnakeNode>(curr);
@@ -91,6 +117,7 @@ void Snake::move(EDirection direction)
 
 void Snake::spawn(const std::unique_ptr<Point>& location)
 {
+	// Spawning head of snake at given location
 	if (!head_->location_) {
 		head_->spawn(std::make_unique<Point>(location));
 		location_.operator*() = head_->location_.operator*();
@@ -99,6 +126,7 @@ void Snake::spawn(const std::unique_ptr<Point>& location)
 
 void Snake::modifySpeed()
 {
+	// Checking if snake has eaten enough apples to decrease snake_speed_modifier_
 	if (apples_eaten_ % apples_eaten_to_modify_speed_ == 0) 
 	{
 		snake_speed_modifier_ = (snake_speed_modifier_ >= k_min_snake_speed_modifier_) ? 
@@ -109,6 +137,8 @@ void Snake::modifySpeed()
 
 void Snake::moveToOppositeSide()
 {
+	// Changing head location if we go out of bounds of console
+	// to opposite of current side of console
 	switch (direction_)
 	{
 	case EDirection::UP:
@@ -128,6 +158,7 @@ void Snake::moveToOppositeSide()
 
 void Snake::getOffsetPoint(std::unique_ptr<Point>& offset)
 {
+	// Filling given Point with appropriate offset coordinates to direction vector
 	switch (direction_)
 	{
 	case EDirection::UP:

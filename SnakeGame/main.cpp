@@ -4,7 +4,7 @@
 
 int main() 
 {
-        
+    // Starting game
 	Game game;
 	game.run();
 
